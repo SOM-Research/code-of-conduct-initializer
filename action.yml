@@ -1,3 +1,4 @@
+# SOM-Research/code-of-conduct-initializer/action.yml
 name: 'Handle Specific Code of Conduct Scenarios'
 description: 'Handles scenarios for missing Code of Conduct or outdated Contributor Covenant version.'
 
@@ -16,15 +17,18 @@ runs:
         fetch-depth: 0
 
     - name: Configure Git user
+      shell: bash
       run: |
         git config --global user.name 'BigBOSS-SOM'
         git config --global user.email 'bigboss.som@proton.me'
       
     - name: Authenticate for git fetch
+      shell: bash
       run: |
         git remote set-url origin https://BigBOSS-SOM:${{ inputs.github_token }}@github.com/${{ github.repository }}.git
       
     - name: Fetch all branches
+      shell: bash
       run: git fetch --all
 
     - name: Create or switch to branch
@@ -42,6 +46,7 @@ runs:
         fi
       
     - name: Add or Update CODE_OF_CONDUCT.md
+      shell: bash
       run: |
         if [ "${{ github.event.action }}" == "no_code_of_conduct" ]; then
           cp .github/templates/CODE_OF_CONDUCT.md .
@@ -54,6 +59,7 @@ runs:
         fi
       
     - name: Push changes
+      shell: bash
       env:
         USER_GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
@@ -65,6 +71,7 @@ runs:
         fi
       
     - name: Set Pull Request Branch
+      shell: bash
       run: |
         if [ "${{ github.event.action }}" == "no_code_of_conduct" ]; then
           echo "PULL_REQUEST_FROM_BRANCH=add-code-of-conduct" >> $GITHUB_ENV
