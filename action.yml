@@ -1,14 +1,12 @@
 name: 'Handle Specific Code of Conduct Scenarios'
 description: 'Handles scenarios for missing Code of Conduct or outdated Contributor Covenant version.'
-
 inputs:
   USER_GITHUB_TOKEN:
-    description: 'GitHub token'
+    description: 'User GitHub Token'
     required: true
   EVENT_ACTION:
     description: 'Event action that triggered the workflow'
     required: true
-
 runs:
   using: 'composite'
   steps:
@@ -27,7 +25,7 @@ runs:
     - name: Authenticate for git fetch
       shell: bash
       run: |
-        git remote set-url origin https://BigBOSS-SOM:${{ inputs.github_token }}@github.com/${{ github.repository }}.git
+        git remote set-url origin https://BigBOSS-SOM:${{ inputs.USER_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
       
     - name: Fetch all branches
       shell: bash
@@ -36,9 +34,9 @@ runs:
     - name: Create or switch to branch
       shell: bash
       run: |
-        if [ "${{ inputs.event_action }}" == "no_code_of_conduct" ]; then
+        if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
           branch="add-code-of-conduct"
-        elif [ "${{ inputs.event_action }}" == "handle_contributor_covenant_1_4" ]; then
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
           branch="update-code-of-conduct"
         fi
         if git show-ref --verify --quiet refs/heads/$branch; then
@@ -50,11 +48,11 @@ runs:
     - name: Add or Update CODE_OF_CONDUCT.md
       shell: bash
       run: |
-        if [ "${{ inputs.event_action }}" == "no_code_of_conduct" ]; then
+        if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
           cp .github/templates/CODE_OF_CONDUCT.md .
           git add CODE_OF_CONDUCT.md
           git commit -m "Add CODE_OF_CONDUCT.md" || echo "No changes to commit"
-        elif [ "${{ inputs.event_action }}" == "handle_contributor_covenant_1_4" ]; then
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
           cp .github/templates/CODE_OF_CONDUCT.md .
           git add CODE_OF_CONDUCT.md
           git commit -m "Update CODE_OF_CONDUCT.md to Contributor Covenant 2.1" || echo "No changes to commit"
@@ -63,30 +61,30 @@ runs:
     - name: Push changes
       shell: bash
       env:
-        USER_GITHUB_TOKEN: ${{ inputs.github_token }}
+        USER_GITHUB_TOKEN: ${{ inputs.USER_GITHUB_TOKEN }}
       run: |
-        git remote set-url origin https://BigBOSS-SOM:${{ inputs.github_token }}@github.com/${{ github.repository }}.git
-        if [ "${{ inputs.event_action }}" == "no_code_of_conduct" ]; then
+        git remote set-url origin https://BigBOSS-SOM:${{ inputs.USER_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
           git push -u origin add-code-of-conduct
-        elif [ "${{ inputs.event_action }}" == "handle_contributor_covenant_1_4" ]; then
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
           git push -u origin update-code-of-conduct
         fi
       
     - name: Set Pull Request Branch
       shell: bash
       run: |
-        if [ "${{ inputs.event_action }}" == "no_code_of_conduct" ]; then
+        if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
           echo "PULL_REQUEST_FROM_BRANCH=add-code-of-conduct" >> $GITHUB_ENV
-        elif [ "${{ inputs.event_action }}" == "handle_contributor_covenant_1_4" ]; then
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
           echo "PULL_REQUEST_FROM_BRANCH=update-code-of-conduct" >> $GITHUB_ENV
         fi
 
     - name: Create Pull Request
       uses: vsoch/pull-request-action@master
-      env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-        PULL_REQUEST_BRANCH: "main"
-        PULL_REQUEST_FROM_BRANCH: ${{ env.PULL_REQUEST_FROM_BRANCH }}
-        PULL_REQUEST_TITLE: ${{ inputs.event_action == 'no_code_of_conduct' && 'Add Code of Conduct' || 'Update Code of Conduct to Contributor Covenant 2.1' }}
-        PULL_REQUEST_BODY: ${{ inputs.event_action == 'no_code_of_conduct' && 'This pull request adds a Code of Conduct to the repository.' || 'We have detected that your current Code of Conduct is based on Contributor Covenant version 1.4. It would be great to update it to the latest version 2.1 to ensure it includes the most recent improvements and guidelines.' }}
-        PULL_REQUEST_LABELS: "code of conduct, documentation"
+      with:
+        token: ${{ inputs.USER_GITHUB_TOKEN }}
+        head: ${{ env.PULL_REQUEST_FROM_BRANCH }}
+        base: "main"
+        title: ${{ inputs.EVENT_ACTION == 'no_code_of_conduct' && 'Add Code of Conduct' || 'Update Code of Conduct to Contributor Covenant 2.1' }}
+        body: ${{ inputs.EVENT_ACTION == 'no_code_of_conduct' && 'This pull request adds a Code of Conduct to the repository.' || 'We have detected that your current Code of Conduct is based on Contributor Covenant version 1.4. It would be great to update it to the latest version 2.1 to ensure it includes the most recent improvements and guidelines.' }}
+        labels: "code of conduct, documentation"
