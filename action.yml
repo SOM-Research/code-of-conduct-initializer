@@ -2,10 +2,10 @@ name: 'Handle Specific Code of Conduct Scenarios'
 description: 'Handles scenarios for missing Code of Conduct or outdated Contributor Covenant version.'
 
 inputs:
-  github_token:
+  USER_GITHUB_TOKEN:
     description: 'GitHub token'
     required: true
-  event_action:
+  EVENT_ACTION:
     description: 'Event action that triggered the workflow'
     required: true
 
