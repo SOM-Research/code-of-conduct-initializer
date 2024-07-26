@@ -1,3 +1,83 @@
+name: 'Handle Specific Code of Conduct Scenarios'
+description: 'Handles scenarios for missing Code of Conduct or outdated Contributor Covenant version.'
+inputs:
+  USER_GITHUB_TOKEN:
+    description: 'User GitHub Token'
+    required: true
+  EVENT_ACTION:
+    description: 'Event action that triggered the workflow'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+
+    - name: Configure Git user
+      shell: bash
+      run: |
+        git config --global user.name 'BigBOSS-SOM'
+        git config --global user.email 'bigboss.som@proton.me'
+
+    - name: Authenticate for git fetch
+      shell: bash
+      run: |
+        git remote set-url origin https://BigBOSS-SOM:${{ inputs.USER_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+    - name: Fetch all branches
+      shell: bash
+      run: git fetch --all
+
+    - name: Create or switch to branch
+      shell: bash
+      run: |
+        if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
+          branch="add-code-of-conduct"
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
+          branch="update-code-of-conduct"
+        fi
+        if git show-ref --verify --quiet refs/heads/$branch; then
+          git checkout $branch
+        else
+          git checkout -b $branch
+        fi
+
+    - name: Add or Update CODE_OF_CONDUCT.md
+      shell: bash
+      run: |
+        cp $GITHUB_ACTION_PATH/.github/templates/CODE_OF_CONDUCT.md .
+        git add CODE_OF_CONDUCT.md
+        if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
+          git commit -m "Add CODE_OF_CONDUCT.md" || echo "No changes to commit"
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
+          git commit -m "Update CODE_OF_CONDUCT.md to Contributor Covenant 2.1" || echo "No changes to commit"
+        fi
+
+    - name: Push changes
+      shell: bash
+      env:
+        USER_GITHUB_TOKEN: ${{ inputs.USER_GITHUB_TOKEN }}
+      run: |
+        git remote set-url origin https://BigBOSS-SOM:${{ inputs.USER_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
+          git push -u origin add-code-of-conduct
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
+          git push -u origin update-code-of-conduct
+        fi
+
+    - name: Set Pull Request Branch
+      shell: bash
+      run: |
+        if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
+          echo "PULL_REQUEST_FROM_BRANCH=add-code-of-conduct" >> $GITHUB_ENV
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
+          echo "PULL_REQUEST_FROM_BRANCH=update-code-of-conduct" >> $GITHUB_ENV
+        fi
+
     - name: Set Pull Request Environment Variables
       shell: bash
       run: |
