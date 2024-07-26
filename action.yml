@@ -64,8 +64,10 @@ runs:
       run: |
         git remote set-url origin https://BigBOSS-SOM:${{ inputs.USER_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
+          git pull origin add-code-of-conduct --rebase
           git push -u origin add-code-of-conduct
         elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
+          git pull origin update-code-of-conduct --rebase
           git push -u origin update-code-of-conduct
         fi
 
