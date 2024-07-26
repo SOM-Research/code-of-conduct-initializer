@@ -80,8 +80,9 @@ runs:
 
     - name: Create Pull Request
       uses: vsoch/pull-request-action@master
+      env:
+        GITHUB_TOKEN: ${{ inputs.USER_GITHUB_TOKEN }}
       with:
-        token: ${{ inputs.USER_GITHUB_TOKEN }}
         head: ${{ env.PULL_REQUEST_FROM_BRANCH }}
         base: "main"
         title: ${{ inputs.EVENT_ACTION == 'no_code_of_conduct' && 'Add Code of Conduct' || 'Update Code of Conduct to Contributor Covenant 2.1' }}
