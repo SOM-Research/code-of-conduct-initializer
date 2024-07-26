@@ -49,7 +49,7 @@ runs:
     - name: Add or Update CODE_OF_CONDUCT.md
       shell: bash
       run: |
-        cp $GITHUB_ACTION_PATH/templates/CODE_OF_CONDUCT.md .
+        cp $GITHUB_ACTION_PATH/.github/templates/CODE_OF_CONDUCT.md .
         git add CODE_OF_CONDUCT.md
         if [ "${{ inputs.EVENT_ACTION }}" == "no_code_of_conduct" ]; then
           git commit -m "Add CODE_OF_CONDUCT.md" || echo "No changes to commit"
