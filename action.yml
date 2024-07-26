@@ -76,6 +76,7 @@ runs:
           echo "PULL_REQUEST_FROM_BRANCH=add-code-of-conduct" >> $GITHUB_ENV
         elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
           echo "PULL_REQUEST_FROM_BRANCH=update-code-of-conduct" >> $GITHUB_ENV
+        fi
 
     - name: Create Pull Request
       uses: vsoch/pull-request-action@master
