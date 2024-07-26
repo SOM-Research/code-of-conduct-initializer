@@ -52,7 +52,7 @@ runs:
           cp .github/templates/CODE_OF_CONDUCT.md .
           git add CODE_OF_CONDUCT.md
           git commit -m "Add CODE_OF_CONDUCT.md" || echo "No changes to commit"
-        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ]; then
+        elif [ "${{ inputs.EVENT_ACTION }}" == "handle_contributor_covenant_1_4" ];then
           cp .github/templates/CODE_OF_CONDUCT.md .
           git add CODE_OF_CONDUCT.md
           git commit -m "Update CODE_OF_CONDUCT.md to Contributor Covenant 2.1" || echo "No changes to commit"
@@ -88,3 +88,4 @@ runs:
         title: ${{ inputs.EVENT_ACTION == 'no_code_of_conduct' && 'Add Code of Conduct' || 'Update Code of Conduct to Contributor Covenant 2.1' }}
         body: ${{ inputs.EVENT_ACTION == 'no_code_of_conduct' && 'This pull request adds a Code of Conduct to the repository.' || 'We have detected that your current Code of Conduct is based on Contributor Covenant version 1.4. It would be great to update it to the latest version 2.1 to ensure it includes the most recent improvements and guidelines.' }}
         labels: "code of conduct, documentation"
+
