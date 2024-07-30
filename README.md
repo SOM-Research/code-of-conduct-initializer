@@ -1,40 +1,48 @@
-# template
+# Code of Conduct Initializer GitHub Action
 
-This is a template for future repositories born in the SOM GitHub organization.
-It offers a collection of files and repository configuration for kick-starting a new project under the SOM GitHub organization.
+This GitHub Action handles scenarios for missing Code of Conduct or outdated Contributor Covenant version by creating or updating the `CODE_OF_CONDUCT.md` file and creating a pull request.
 
-This repository does not have activated the use of issues, projects o wikis. Only Pull Requests are allowed.
+## Features
 
-> If you have **any** question, contact [Javier Cánovas](https://github.com/jlcanovas) via the SOM Slack app.
+- Checks for missing `CODE_OF_CONDUCT.md` and creates one if absent.
+- Updates the `CODE_OF_CONDUCT.md` to the latest Contributor Covenant version if outdated.
+- Creates a pull request for the changes made to the `CODE_OF_CONDUCT.md`.
 
-## Steps to customize this repo for your project
+## Inputs
 
-1. Create a new repository in the SOM GitHub organization using this template. You have to set the `Repository template` field to `SOM-Research/template`.
+- `USER_GITHUB_TOKEN` **(required)**: User GitHub Token for authentication and pushing changes.
+- `EVENT_ACTION` **(required)**: Event action that triggered the workflow, used to determine the appropriate response.
 
-    ![Repositoy Template](images/repositoryTemplate.png)
+### How It Works
+1. **Checkout Repository**: The action checks out the repository to get the latest code and context.
+2. **Configure Git User**: Sets up the Git user configuration for committing changes.
+3. **Authenticate for Git Operations**: Authenticates to GitHub for fetching and pushing branches.
+4. **Create or Switch to Branch**: Creates or switches to a branch based on the event action (`no_code_of_conduct` or `handle_contributor_covenant_1_4`).
+5. **Add or Update `CODE_OF_CONDUCT.md`**: Copies the template `CODE_OF_CONDUCT.md` file to the repository and stages it for commit.
+6. **Commit Changes**: Commits the changes with an appropriate message based on the event action.
+7. **Push Changes**: Pushes the committed changes to the corresponding branch.
+8. **Set Pull Request Environment Variables**: Sets environment variables for the pull request title, body, and branch.
+9. **Create Pull Request**: Uses the `vsoch/pull-request-action` to create a pull request for the changes.
 
-2. Edit the project description. You can do it in the `About` tab of the repository (click on the gear icon). Try to create a descriptive entry for the project, and include at least three tags. If the project has a website, indicate also the URL.
+## Example Scenario
+- **Missing Code of Conduct**: The action will add a `CODE_OF_CONDUCT.md` file and create a pull request.
+- **Outdated Code of Conduct**: The action will update the `CODE_OF_CONDUCT.md` to the latest version and create a pull request.
 
-    ![Project Description](images/about.png)
+## Permissions
+This action requires the following permissions:
 
-3. In the preovious menu, decide also whether your repository page should include `Releases`, `Packages` or `Environments` tabs. In case of doubt, remove them
+- `contents: write`
+- `issues: write`
+- `pull-requests: write`
 
-4. Review the contributing guidelines in `CONTIBUTING.md`. Please, read carefully the provided template and adapt to your repository.
+Ensure these permissions are set in your workflow.
 
-5. Review the code of conduct in `CODE_OF_CONDUCT.md`. Please, read carefully the provided template and adapt to your repository.
+## License
+This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
 
-6. Review the governance model in `GOVERNANCE.md`. Please, read carefully the provided template and adapt to your repository.
+The CC BY-SA license allows users to distribute, remix, adapt, and build upon the material in any medium or format, so long as attribution is given to the creator. The license allows for commercial use. If you remix, adapt, or build upon the material, you must license the modified material under identical terms.
 
-7. Check that the proposed license matches with your project. The template includes the CC-BY-SA license, but you can change it to any other license. You can find a list of licenses in [Choose a License](https://choosealicense.com/).
+[Creative Commons License](https://creativecommons.org/licenses/by-sa/4.0/)
 
-8. Decide whether your project will use issues, projects, and wikis. You can de/activate them in the `Settings` tab of the repository.
-
-9. Review the templates proposed for issues and pull requests. You can find them in the `.github` folder. Remove the folder if you do not plan to use them. 
-
-    9.1. Issue templates are located in `.github/ISSUE_TEMPLATE`. You can find a template for proposals and questions, but you can modify or create new ones. You can find more information in [About issue and pull request templates](https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates). 
-
-    9.2. Pull request template is located in `.github`. You can find more information in [About issue and pull request templates](https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates).
-
-10. If your work is related to a paper, and you want to facilitate its citation, review the `CITATION.cff` file. The provided template will help to fill the gaps, but if you need more help, you can find more information in [Citation File Format](https://citation-file-format.github.io/). Otherwise, just remove the file.
-
-11. Modify the `README.md` file. Once you have done the previous steps, write your the README file for your project. 
+## Author
+Created by CobosDS. For any issues or contributions, please open an issue or submit a pull request on the [GitHub repository](https://github.com/SOM-Research/code-of-conduct-initializer).
